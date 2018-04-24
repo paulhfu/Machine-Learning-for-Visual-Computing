@@ -33,5 +33,7 @@ if __name__ == "__main__":
         plt.subplot(3,2,indexes[i+3])
         plt.title('label '+str(i+1), fontsize=20)
         plt.imshow(lblDsets[i])
+
+
     plt.suptitle('Images and their related labels', fontsize=30)
     plt.show()
