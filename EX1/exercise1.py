@@ -30,7 +30,7 @@ def visualize_imagesAndLables(imDsets, lblDsets):
         plt.title('label '+str(i+1), fontsize=20)
         plt.imshow(lblDsets[i])
  
-    plt.suptitle('Images and their related labels', fontsize=30)
+    plt.suptitle('Training images and their related labels', fontsize=30)
 
 
 def apply_filters(imDsets, lblDsets, sigma, gauss, gaussLaplace, gaussGradientMagnitude, structTensor, hessEigenvalues):
@@ -52,19 +52,22 @@ def apply_filters(imDsets, lblDsets, sigma, gauss, gaussLaplace, gaussGradientMa
 
 
 def visualize_filters():
-    visualize_images(gauss, len(gauss), 'Gaussian Filter')
-    visualize_images(gaussLaplace, len(gaussLaplace), 'Gaussian Laplace Filter')
-    visualize_images(gaussGradientMagnitude, len(gaussGradientMagnitude), 'Gaussian Gradient Magnitude')
+    visualize_images(gauss, len(gauss), 'Gaussian Filter', sigma)
+    visualize_images(gaussLaplace, len(gaussLaplace), 'Gaussian Laplace Filter', sigma)
+    visualize_images(gaussGradientMagnitude, len(gaussGradientMagnitude), 'Gaussian Gradient Magnitude', sigma)
 
 
-def visualize_images(imDsets, num, title):
+def visualize_images(imDsets, num, title, sigma):
     global count
     plt.figure(count, figsize=(20,20))
     count = count + 1
+    imgIdx = 0
 
     for i in range(num):
-        plt.subplot(3, (num//3)+1, i+1)
-        plt.title('image '+str(i+1), fontsize=10)
+        if(i%6==0):
+            imgIdx += 1
+        plt.subplot(4, (num//4)+1, i+1)
+        plt.title('Training image: '+str(imgIdx)+'  with sigma='+str(sigma[i%6]), fontsize=10)
         plt.imshow(imDsets[i])
 
     plt.suptitle(title, fontsize=30)
