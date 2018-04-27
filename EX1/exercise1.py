@@ -127,5 +127,5 @@ if __name__ == "__main__":
     inputProps=rf.predict_proba(input)
 
     hf = h5py.File('propsData.h5','w')
-    create_dataset('inputProps', data=inputProps)
-    close()
+    hf.create_dataset('inputProps', data=inputProps)
+    hf.close()
