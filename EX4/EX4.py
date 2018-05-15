@@ -10,11 +10,9 @@ def initUnaryProbabilities():
             predictions[i][j] = randint(1, classes + 1)
 
 
-def createPairProbMatrix():
+def createPairProbMatrix(pairMatrix):
 
-    return np.matrix([[0,   1,   5], 
-                      [100, 0,   1],
-                      [100, 100, 0]])
+    return pairMatrix
 
 
 def absorbUnaryPot():
@@ -52,6 +50,18 @@ def calculateMinima():
     for i in range(classes):
         minimas.append(np.amin(potentials[index][:, i]))
 
+    minIndex = np.argmin(minimas[-classes:])
+    minValue = minimas[-classes:][minIndex]
+
+    if index == 0:
+        shortestPath.append(minIndex)
+
+    count = 0
+    for x in potentials[index][:, minIndex]:
+        if x == minValue:
+            shortestPath.append(count)
+        count += 1
+
 
 def calculateShortestPath():
 
@@ -59,19 +69,38 @@ def calculateShortestPath():
         calculateMinima()
 
 
-
 if __name__ == '__main__':
     classes = 3
+
+    # Example 1
     predictions = np.zeros((classes, classes))
-
-    initUnaryProbabilities()
-    pairProp = createPairProbMatrix()
-
-    potentials = absorbUnaryPot()
-
     shortestPath = []
     minimas = []
     costs = []
 
+    initUnaryProbabilities()
+
+    pairProp = createPairProbMatrix(np.matrix([[0,   1,   5], 
+                                               [100, 0,   1],
+                                               [100, 100, 0]]))
+    potentials = absorbUnaryPot()
+
     calculateShortestPath()
-    print("Costs: ", minimas[-classes:])
+    print("Shortest Path Example 1: ", shortestPath)
+
+
+    # Example 2
+    predictions = np.zeros((classes, classes))
+    shortestPath = []
+    minimas = []
+    costs = []
+
+    initUnaryProbabilities()
+
+    pairProp = createPairProbMatrix(np.matrix([[0,   9,   5], 
+                                               [5,   0,   1],
+                                               [100, 2,   0]]))
+    potentials = absorbUnaryPot()
+
+    calculateShortestPath()
+    print("Shortest Path Example 2: ", shortestPath)
