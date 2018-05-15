@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{Untitled}
+    \title{Untitled1}
     
     
     
@@ -281,64 +281,188 @@
 
     
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}44}]:} \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+{\color{incolor}In [{\color{incolor}104}]:} \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+          \PY{k+kn}{import} \PY{n+nn}{h5py} \PY{k}{as} \PY{n+nn}{h5}
+          \PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+          \PY{k+kn}{import} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{ndimage}
+          \PY{k+kn}{import} \PY{n+nn}{skimage}\PY{n+nn}{.}\PY{n+nn}{color}
+          \PY{k+kn}{import} \PY{n+nn}{skimage}\PY{n+nn}{.}\PY{n+nn}{feature}
+          \PY{k+kn}{import} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{ensemble}
+          \PY{k+kn}{from} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{colors} \PY{k}{import} \PY{n}{LinearSegmentedColormap}
+          \PY{k+kn}{import} \PY{n+nn}{ipywidgets} \PY{k}{as} \PY{n+nn}{widgets}
+          \PY{k+kn}{from} \PY{n+nn}{ipywidgets} \PY{k}{import} \PY{n}{interact}\PY{p}{,} \PY{n}{interactive}\PY{p}{,} \PY{n}{fixed}
+          \PY{k+kn}{import} \PY{n+nn}{ipywidgets} \PY{k}{as} \PY{n+nn}{widgets}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}54}]:} \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}
-         \PY{n}{lables}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
-         \PY{n}{uPotentials}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
-         \PY{n}{pPotential}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
-         
-         \PY{c+c1}{\PYZsh{}Unary potentials:}
-         \PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{11}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}
-         \PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{6}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}
-         \PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{10}\PY{p}{]}
-         \PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{=}\PY{p}{[}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{7}\PY{p}{]}
-         \PY{c+c1}{\PYZsh{}Pairwise potentials:}
-         \PY{n}{pPotential}\PY{o}{=}\PY{p}{[}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{,} \PY{o}{\PYZhy{}}\PY{l+m+mi}{10}\PY{p}{]}\PY{p}{,}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{]}\PY{p}{]}
+{\color{incolor}In [{\color{incolor}110}]:} \PY{c+c1}{\PYZsh{} Functions:}
+          
+          \PY{k}{def} \PY{n+nf}{daijkstra}\PY{p}{(}\PY{n}{chain}\PY{p}{,} \PY{n}{p\PYZus{}prior}\PY{p}{,} \PY{n}{u\PYZus{}prior}\PY{p}{)}\PY{p}{:}
+              \PY{n}{updated\PYZus{}chain} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{chain}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+              \PY{n}{paths} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{p\PYZus{}prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{chain}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{int}\PY{p}{)} \PY{c+c1}{\PYZsh{} param for saving all labels of the 5 paths}
+              \PY{n}{path\PYZus{}costs} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{p\PYZus{}prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{int}\PY{p}{)}            \PY{c+c1}{\PYZsh{} param for saving the summed up costs for each path 1\PYZhy{}5}
+              \PY{n}{temp\PYZus{}costs} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{p\PYZus{}prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{int}\PY{p}{)}            \PY{c+c1}{\PYZsh{} param for temporarily save the cost for each possible path at a step }
+              \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{chain}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{for} \PY{n}{state} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{p\PYZus{}prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}  \PY{c+c1}{\PYZsh{} current node}
+                      \PY{k}{for} \PY{n}{next\PYZus{}state} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{p\PYZus{}prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}  \PY{c+c1}{\PYZsh{} all paths that lead to that node}
+                          \PY{n}{temp\PYZus{}costs}\PY{p}{[}\PY{n}{next\PYZus{}state}\PY{p}{]} \PY{o}{=}  \PY{n}{p\PYZus{}prior}\PY{p}{[}\PY{n}{next\PYZus{}state}\PY{p}{]}\PY{p}{[}\PY{n}{paths}\PY{p}{[}\PY{n}{next\PYZus{}state}\PY{p}{]}\PY{p}{[}\PY{n}{x}\PY{p}{]}\PY{p}{]} \PY{c+c1}{\PYZsh{} get the cost for each possible path, next\PYZus{}state that leads to the node, state}
+                          \PY{k}{if}\PY{p}{(}\PY{n}{next\PYZus{}state} \PY{o}{==} \PY{n}{chain}\PY{p}{[}\PY{n}{x}\PY{p}{]}\PY{p}{)}\PY{p}{:}   \PY{c+c1}{\PYZsh{} if the possible path equals to the posterior apply the unary prior to the cost}
+                              \PY{n}{temp\PYZus{}costs}\PY{p}{[}\PY{n}{next\PYZus{}state}\PY{p}{]} \PY{o}{+}\PY{o}{=} \PY{n}{u\PYZus{}prior}
+                      \PY{n}{paths}\PY{p}{[}\PY{n}{state}\PY{p}{]}\PY{p}{[}\PY{n}{x}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{choice}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{n}{temp\PYZus{}costs} \PY{o}{==} \PY{n}{np}\PY{o}{.}\PY{n}{amin}\PY{p}{(}\PY{n}{temp\PYZus{}costs}\PY{p}{)}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)} \PY{c+c1}{\PYZsh{} returns the label with minimum costs. If there are more multiple labels that share a minimum, one is randomly out of those selected}
+                      \PY{n}{path\PYZus{}costs}\PY{p}{[}\PY{n}{state}\PY{p}{]} \PY{o}{+}\PY{o}{=} \PY{n}{temp\PYZus{}costs}\PY{p}{[}\PY{n}{paths}\PY{p}{[}\PY{n}{state}\PY{p}{]}\PY{p}{[}\PY{n}{x}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{]}
+                      
+              \PY{k}{return} \PY{n}{paths}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{argmin}\PY{p}{(}\PY{n}{path\PYZus{}costs}\PY{p}{)}\PY{p}{]}  \PY{c+c1}{\PYZsh{} return the labels of the path with the cumulated minimum costs}
+          
+          \PY{k}{def} \PY{n+nf}{get\PYZus{}p\PYZus{}prior\PYZus{}r}\PY{p}{(}\PY{n}{C1}\PY{p}{,} \PY{n}{C2}\PY{p}{)}\PY{p}{:}
+              \PY{n}{prior} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+              \PY{n}{prior}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{eye}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{0}
+              \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                      \PY{k}{if}\PY{p}{(}\PY{n+nb}{abs}\PY{p}{(}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{n}{j}\PY{p}{)}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+                          \PY{n}{prior}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{C1}
+                      \PY{k}{if}\PY{p}{(}\PY{n+nb}{abs}\PY{p}{(}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{n}{j}\PY{p}{)}\PY{o}{\PYZgt{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+                          \PY{n}{prior}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{C2}
+              \PY{k}{return} \PY{n}{prior}
+          
+          \PY{k}{def} \PY{n+nf}{get\PYZus{}p\PYZus{}prior\PYZus{}c}\PY{p}{(}\PY{n}{C1}\PY{p}{,} \PY{n}{C2}\PY{p}{,} \PY{n}{C3}\PY{p}{)}\PY{p}{:}
+              \PY{n}{prior} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+              \PY{n}{prior}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{eye}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{0}
+              \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                  \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{prior}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                      \PY{k}{if}\PY{p}{(}\PY{p}{(}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{n}{i}\PY{p}{)} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mi}{1} \PY{p}{)}\PY{p}{:}
+                          \PY{n}{prior}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{C3}
+                      \PY{k}{if}\PY{p}{(}\PY{p}{(}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{n}{i}\PY{p}{)} \PY{o}{==} \PY{o}{\PYZhy{}}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{:}
+                          \PY{n}{prior}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{C1}
+                      \PY{k}{if}\PY{p}{(}\PY{p}{(}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{n}{i}\PY{p}{)} \PY{o}{==} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+                          \PY{n}{prior}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{C1}
+                      \PY{k}{if}\PY{p}{(}\PY{p}{(}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{n}{i}\PY{p}{)} \PY{o}{\PYZgt{}} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+                          \PY{n}{prior}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{o}{=}\PY{n}{C2}
+              \PY{k}{return} \PY{n}{prior}
 \end{Verbatim}
 
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}57}]:} \PY{c+c1}{\PYZsh{} just pick a large number where we can be certain that there will be smaller energies}
-         \PY{n}{min\PYZus{}energy} \PY{o}{=} \PY{l+m+mi}{10000000}
-         \PY{k}{for} \PY{n}{x1} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{:}
-             \PY{k}{for} \PY{n}{x2} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{:}
-                 \PY{k}{for} \PY{n}{x3} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{:}
-                     \PY{k}{for} \PY{n}{x4} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{:}
-                         \PY{n}{energy} \PY{o}{=} \PY{p}{(}\PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{n}{x1}\PY{p}{]} 
-                         \PY{o}{+} \PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{[}\PY{n}{x2}\PY{p}{]} 
-                         \PY{o}{+} \PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{[}\PY{n}{x3}\PY{p}{]} 
-                         \PY{o}{+} \PY{n}{uPotentials}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{p}{[}\PY{n}{x4}\PY{p}{]} 
-                         \PY{o}{+} \PY{n}{pPotential}\PY{p}{[}\PY{n}{x1}\PY{p}{]}\PY{p}{[}\PY{n}{x2}\PY{p}{]} 
-                         \PY{o}{+} \PY{n}{pPotential}\PY{p}{[}\PY{n}{x1}\PY{p}{]}\PY{p}{[}\PY{n}{x3}\PY{p}{]} 
-                         \PY{o}{+} \PY{n}{pPotential}\PY{p}{[}\PY{n}{x1}\PY{p}{]}\PY{p}{[}\PY{n}{x4}\PY{p}{]}\PY{p}{)}
-                         
-                         \PY{k}{if}\PY{p}{(}\PY{n}{energy} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{n}{min\PYZus{}energy}\PY{p}{)}\PY{p}{:}
-                             \PY{n}{min\PYZus{}energy} \PY{o}{=} \PY{n}{energy}
-                             \PY{n}{x}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{=}\PY{n}{x1}
-                             \PY{n}{x}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{=}\PY{n}{x2}
-                             \PY{n}{x}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{=}\PY{n}{x3}
-                             \PY{n}{x}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{=}\PY{n}{x4}
-                             
-         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{The global minima for the energy function is:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{E( x1=}\PY{l+s+s2}{\PYZdq{}}\PY{o}{+}\PY{n+nb}{str}\PY{p}{(}\PY{n}{x}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)} 
-               \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{, x2=}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{x}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)} 
-               \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{, x3=}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{x}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)} 
-               \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{, x4=}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{x}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{p}{)} 
-               \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{) = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{min\PYZus{}energy}\PY{p}{)}\PY{p}{)}
-         \PY{c+c1}{\PYZsh{} The solution of this program for the x\PYZhy{}vector also confirms the solution that was calculated by hand in Ex1.a}
+{\color{incolor}In [{\color{incolor}111}]:} \PY{c+c1}{\PYZsh{}EX 3b)}
+          
+          \PY{n}{predictions\PYZus{}set} \PY{o}{=} \PY{n}{h5}\PY{o}{.}\PY{n}{File}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{predictions.h5}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+          \PY{n}{pred\PYZus{}img} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+          
+          \PY{k}{for} \PY{n}{key} \PY{o+ow}{in} \PY{n}{predictions\PYZus{}set}\PY{p}{:}
+              \PY{n}{pred\PYZus{}img}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{predictions\PYZus{}set}\PY{p}{[}\PY{n}{key}\PY{p}{]}\PY{p}{[}\PY{o}{.}\PY{o}{.}\PY{o}{.}\PY{p}{]}\PY{p}{)}
+              
+          \PY{n}{predictions\PYZus{}set}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+          \PY{n}{pred\PYZus{}img}\PY{o}{=}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{pred\PYZus{}img}\PY{p}{)}
+          
+          \PY{n}{test\PYZus{}label} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{pred\PYZus{}img}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+          \PY{n}{train\PYZus{}label} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{pred\PYZus{}img}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{,} 
+                                  \PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{pred\PYZus{}img}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{,} 
+                                  \PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{pred\PYZus{}img}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+          
+          \PY{n}{colors} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{g}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{cmap\PYZus{}name} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{my\PYZus{}list}\PY{l+s+s1}{\PYZsq{}}
+          \PY{n}{cm} \PY{o}{=} \PY{n}{LinearSegmentedColormap}\PY{o}{.}\PY{n}{from\PYZus{}list}\PY{p}{(}
+                  \PY{n}{cmap\PYZus{}name}\PY{p}{,} \PY{n}{colors}\PY{p}{,} \PY{n}{N}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+          \PY{n}{fig}\PY{p}{,}\PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}
+          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{:}
+              \PY{n}{ax}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{train\PYZus{}label}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+              \PY{n}{ax}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{training label }\PY{l+s+s2}{\PYZdq{}}\PY{o}{+}\PY{n+nb}{str}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
+          \PY{n}{ax}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{test\PYZus{}label}\PY{p}{)}
+          \PY{n}{ax}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{testing label }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+          \PY{n}{fig}\PY{o}{.}\PY{n}{set\PYZus{}size\PYZus{}inches}\PY{p}{(}\PY{l+m+mi}{20}\PY{p}{,}\PY{l+m+mi}{40}\PY{p}{)}
 \end{Verbatim}
 
 
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_2_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
     \begin{Verbatim}[commandchars=\\\{\}]
-The global minima for the energy function is:
-E( x1=1.0, x2=0.0, x3=0.0, x4=0.0) = -15.0
+{\color{incolor}In [{\color{incolor}112}]:} \PY{c+c1}{\PYZsh{}EX 3c)}
+          
+          \PY{n}{C1} \PY{o}{=} \PY{l+m+mi}{2}
+          \PY{n}{C2} \PY{o}{=} \PY{l+m+mi}{3}
+          \PY{n}{u\PYZus{}prior\PYZus{}r} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mi}{2}
+          
+          \PY{n}{p\PYZus{}prior\PYZus{}r} \PY{o}{=} \PY{n}{get\PYZus{}p\PYZus{}prior\PYZus{}r}\PY{p}{(}\PY{n}{C1}\PY{p}{,} \PY{n}{C2}\PY{p}{)}
+          \PY{c+c1}{\PYZsh{}print(test\PYZus{}label[200])}
+          \PY{c+c1}{\PYZsh{}ret = daijkstra(test\PYZus{}label[200], p\PYZus{}prior, u\PYZus{}prior)}
+          \PY{c+c1}{\PYZsh{}print(ret)}
+          \PY{n}{updated\PYZus{}test\PYZus{}label} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{test\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} 
+                                         \PY{n}{test\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+          \PY{n}{updated\PYZus{}train\PYZus{}label} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} 
+                                          \PY{n}{train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+                                          \PY{n}{train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+          
+          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{test\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+              \PY{n}{updated\PYZus{}test\PYZus{}label}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{daijkstra}\PY{p}{(}\PY{n}{test\PYZus{}label}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{p\PYZus{}prior\PYZus{}r}\PY{p}{,} \PY{n}{u\PYZus{}prior\PYZus{}r}\PY{p}{)}
+              \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{updated\PYZus{}train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                  \PY{n}{updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{daijkstra}\PY{p}{(}\PY{n}{train\PYZus{}label}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{p\PYZus{}prior\PYZus{}r}\PY{p}{,} \PY{n}{u\PYZus{}prior\PYZus{}r}\PY{p}{)}
+                  
+          \PY{n}{fig1}\PY{p}{,}\PY{n}{ax1} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}
+          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{:}
+              \PY{n}{ax1}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+              \PY{n}{ax1}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{updated training label }\PY{l+s+s2}{\PYZdq{}}\PY{o}{+}\PY{n+nb}{str}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
+          \PY{n}{ax1}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{updated\PYZus{}test\PYZus{}label}\PY{p}{)}
+          \PY{n}{ax1}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{updated testing label }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+          \PY{n}{fig1}\PY{o}{.}\PY{n}{set\PYZus{}size\PYZus{}inches}\PY{p}{(}\PY{l+m+mi}{20}\PY{p}{,}\PY{l+m+mi}{40}\PY{p}{)}
+\end{Verbatim}
 
-    \end{Verbatim}
 
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_3_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}113}]:} \PY{c+c1}{\PYZsh{} EX 3e)}
+          \PY{n}{C1} \PY{o}{=} \PY{l+m+mi}{1}
+          \PY{n}{C2} \PY{o}{=} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{C1}
+          \PY{n}{C3} \PY{o}{=} \PY{l+m+mi}{1000} \PY{o}{*} \PY{n}{C1}
+          \PY{n}{u\PYZus{}prior\PYZus{}c} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mi}{3}
+          
+          \PY{n}{p\PYZus{}prior\PYZus{}c} \PY{o}{=} \PY{n}{get\PYZus{}p\PYZus{}prior\PYZus{}c}\PY{p}{(}\PY{n}{C1}\PY{p}{,} \PY{n}{C2}\PY{p}{,} \PY{n}{C3}\PY{p}{)}
+          
+          \PY{n}{transposed\PYZus{}train\PYZus{}label} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} 
+                                             \PY{n}{train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{,} 
+                                             \PY{n}{train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+          \PY{n}{transposed\PYZus{}test\PYZus{}label} \PY{o}{=} \PY{n}{test\PYZus{}label}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          \PY{n}{transposed\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          \PY{n}{transposed\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          \PY{n}{transposed\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          
+          \PY{n}{transposed\PYZus{}updated\PYZus{}test\PYZus{}label} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{transposed\PYZus{}test\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} 
+                                                    \PY{n}{transposed\PYZus{}test\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+          \PY{n}{transposed\PYZus{}updated\PYZus{}train\PYZus{}label} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{transposed\PYZus{}train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} 
+                                                     \PY{n}{transposed\PYZus{}train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+                                                     \PY{n}{transposed\PYZus{}train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+          
+          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{test\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+              \PY{n}{transposed\PYZus{}updated\PYZus{}test\PYZus{}label}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{daijkstra}\PY{p}{(}\PY{n}{transposed\PYZus{}test\PYZus{}label}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{p\PYZus{}prior\PYZus{}c}\PY{p}{,} \PY{n}{u\PYZus{}prior\PYZus{}c}\PY{p}{)}
+              \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{updated\PYZus{}train\PYZus{}label}\PY{o}{.}\PY{n}{shape}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{:}
+                  \PY{n}{transposed\PYZus{}updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{daijkstra}\PY{p}{(}\PY{n}{transposed\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{,} \PY{n}{p\PYZus{}prior\PYZus{}c}\PY{p}{,} \PY{n}{u\PYZus{}prior\PYZus{}c}\PY{p}{)}
+                  
+          \PY{n}{updated\PYZus{}test\PYZus{}label} \PY{o}{=} \PY{n}{transposed\PYZus{}updated\PYZus{}test\PYZus{}label}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          \PY{n}{updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{transposed\PYZus{}updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          \PY{n}{updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{transposed\PYZus{}updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          \PY{n}{updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{=} \PY{n}{transposed\PYZus{}updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{.}\PY{n}{transpose}\PY{p}{(}\PY{p}{)}
+          
+          \PY{n}{fig2}\PY{p}{,}\PY{n}{ax2} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}
+          \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{)}\PY{p}{:}
+              \PY{n}{ax2}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{updated\PYZus{}train\PYZus{}label}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+              \PY{n}{ax2}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{updated training label }\PY{l+s+s2}{\PYZdq{}}\PY{o}{+}\PY{n+nb}{str}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
+          \PY{n}{ax2}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{.}\PY{n}{imshow}\PY{p}{(}\PY{n}{updated\PYZus{}test\PYZus{}label}\PY{p}{)}
+          \PY{n}{ax2}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{updated testing label }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+          \PY{n}{fig2}\PY{o}{.}\PY{n}{set\PYZus{}size\PYZus{}inches}\PY{p}{(}\PY{l+m+mi}{20}\PY{p}{,}\PY{l+m+mi}{40}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_4_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
 
     % Add a bibliography block to the postdoc
     
