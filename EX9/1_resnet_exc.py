@@ -171,7 +171,8 @@ def ResNet152():
 
 learning_rate = 0.00001
 for d in range(4):
-    net = ResNet18()
+
+    net = ResNet152()
     net.to(device)
 
     '''
@@ -188,7 +189,7 @@ for d in range(4):
     # Loop over the data iterator, and feed the inputs to the
     # network and optimize.
 
-    n_epochs = 20
+    n_epochs = 10
     train_loss_history = []
     epoch_loss_history = []
 
@@ -230,7 +231,8 @@ for d in range(4):
     failed_img = []
     failed_lbl = []
     test_loss_history = []
-
+    k_p = 0
+    k_f = 0
     for i, data in enumerate(testloader, 0):
         input, target = data[0].to(device), data[1].to(device)
         out = net.forward(input)
@@ -238,10 +240,14 @@ for d in range(4):
         test_loss_history.append(loss.item())
         for k in range(4):
             if data[1][k].item() == torch.argmax(out[k]).item():
-                passed_img.append(data[0][k].numpy().tolist())
+                if k_p < 4:
+                    passed_img.append(data[0][k].numpy().tolist())
+                    k_p += 1
                 passed_lbl.append(out[k].cpu().detach().numpy().tolist())
             else:
-                failed_img.append(data[0][k].numpy().tolist())
+                if k_f < 4:
+                    failed_img.append(data[0][k].numpy().tolist())
+                    k_f += 1
                 failed_lbl.append(out[k].cpu().detach().numpy().tolist())
 
 
@@ -249,7 +255,7 @@ for d in range(4):
     #print('Accuracy of the network on the 10000 test images: %d %%' % (100 * correct / 10000))
 
     # Save failed and passed sets as well as the NN
-    torch.save(net.state_dict(), '/home/mlcvss18_7/PaulHiltResNet/NN_lr'+str(learning_rate)+'.dat')
+    # torch.save(net.state_dict(), '/home/mlcvss18_7/PaulHiltResNet/NN_lr'+str(learning_rate)+'.dat')
 
     passed_img = np.array(passed_img)
     passed_lbl = np.array(passed_lbl)
